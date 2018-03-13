@@ -1,34 +1,19 @@
-pipeline {
-    agent { docker { image 'node:6.3' } }
-	environment {
-		HOME="."
-    }
-    stages {
-        stage('build') {
-            steps {
-				echo 'Building dependencies...'
-       		 	sh 'npm install'
-            }
-        }
-		stage('Test') {
-			steps {
-				echo 'Testing...'
-				sh 'npm test'
+
+		node {
+			def testimage  = docker.build("test-image")
+			testimage.inside {
+				stage('Checkout') {
+					steps {
+						echo 'Getting source code...'
+						checkout scm
+					}
+				}
+				steps {
+					echo 'Building dependencies...'
+					sh 'npm install'
+					echo 'Testing...'
+					sh 'npm test'
+				}
 			}
 		}
 
-		stage('Publish') {
-			steps {
-				echo 'Publishing Test Coverage...'
-				publishHTML (target: [
-					allowMissing: false,
-					alwaysLinkToLastBuild: false,
-					keepAll: true,
-					reportDir: 'coverage/lcov-report',
-					reportFiles: 'index.html',
-					reportName: "Application Test Coverage"
-				])
-			}
-		}
-    }
-}
