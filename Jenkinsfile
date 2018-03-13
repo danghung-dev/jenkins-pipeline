@@ -1,13 +1,13 @@
 node {
+	stage('Checkout') {
+		echo 'Getting source code...'
+		checkout scm
+	}
 	def testimage  = docker.build("test-image")
 	testimage.inside {
-		stage('Checkout') {
-			steps {
-				echo 'Getting source code...'
-				checkout scm
-			}
-		}
-		steps {
+		withEnv([
+        'HOME=.',
+    ]) {
 			echo 'Building dependencies...'
 			sh 'npm install'
 			echo 'Testing...'
