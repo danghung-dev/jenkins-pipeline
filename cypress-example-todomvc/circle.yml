@@ -1,0 +1,40 @@
+machine:
+  node:
+    version: 6
+
+dependencies:
+  cache_directories:
+    - ~/.npm
+    - node_modules
+  pre:
+    - npm install
+
+test:
+  pre:
+    ## lint our code
+    - npm run lint
+
+    ## runs the 'start' script which
+    ## boots our local app server on port 8080
+    ## which cypress expects to be running
+    - npm start:
+        background: true
+  override:
+    ## now run cypress headlessly
+    ## and record all of the tests.
+    ## Cypress will search for a
+    ## CYPRESS_RECORD_KEY environment
+    ## variable by default and apply
+    ## this to the run.
+    - npm run cypress:run -- --record
+
+    ## alternatively we could specify
+    ## a specific record key to use
+    ## like this without having to
+    ## configure environment variables
+    ## - npm run cypress:run -- --record --key <your_record_key>
+
+    ## you can also start the server and
+    ## run e2e tests and shut down server with
+    ## a single command
+    ## - npm run test:ci
